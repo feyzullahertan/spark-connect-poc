@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  spark-connect:
+    build: ./spark
+    ports:
+      - "15002:15002"  # gRPC port for Spark Connect
+    volumes:
+      - ./data:/opt/spark/data
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    command: ["/opt/spark/bin/spark-connect-server"]
+
+  notebook:
+    image: jupyter/pyspark-notebook:latest
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebook:/home/jovyan/work
+      - ./data:/home/jovyan/data
+    environment:
+      - GRANT_SUDO=yes
+      - JUPYTER_ENABLE_LAB=yes
+    command: ["start-notebook.sh"]
